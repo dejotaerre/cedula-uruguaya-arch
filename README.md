@@ -88,6 +88,42 @@ sin solicitar el PIN:
 ./cedula-uruguaya-arch.py verificar
 ```
 
+Para comprobar por separado el lector, detectar si la cédula está insertada y
+mostrar la información pública del chip y sus certificados:
+
+```bash
+./comprobar-cedula.py
+```
+
+El comprobador muestra datos personales incluidos en el certificado, como el
+nombre y el número de documento. No solicita el PIN, no lee claves privadas y
+no modifica el sistema.
+
+En GNOME también puede utilizarse la interfaz gráfica GTK 4:
+
+```bash
+./comprobar-cedula-gui.py
+```
+
+La aplicación gráfica comprueba el lector, la tarjeta y el certificado, permite
+copiar la información pública y ofrece una verificación opcional del PIN. Esta
+usa un campo enmascarado y un seudoterminal efímero: el PIN no se pasa mediante
+argumentos o variables de entorno, y sólo se permite un intento por apertura de
+la aplicación. Si el token informa pocos intentos, último intento o bloqueo, el
+botón permanece deshabilitado.
+
+Para comprobar además que el PIN sea aceptado:
+
+```bash
+./comprobar-cedula.py --verificar-pin
+```
+
+Esta opción sólo funciona directamente en una terminal interactiva. Advierte
+del riesgo, comprueba que el token no informe pocos intentos o bloqueo y exige
+escribir `VERIFICAR` antes de realizar un único intento. `pkcs11-tool` solicita
+el PIN con entrada oculta y verifica la sesión mediante una lectura de
+certificados públicos. El PIN no se pasa como argumento ni se guarda.
+
 Para firmar en la web se elige **Cédula de Identidad con chip en Navegador**. Es
 posible que el sitio muestre una advertencia de compatibilidad de SConnect aun
 cuando la firma funcione; el resultado debe confirmarse descargando el PDF y
