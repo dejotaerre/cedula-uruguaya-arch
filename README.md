@@ -112,6 +112,11 @@ argumentos o variables de entorno, y sólo se permite un intento por apertura de
 la aplicación. Si el token informa pocos intentos, último intento o bloqueo, el
 botón permanece deshabilitado.
 
+![Interfaz gráfica del comprobador con datos ficticios](docs/images/comprobador-gui-datos-ficticios.png)
+
+_Captura demostrativa: la identidad, los números de serie y la huella del
+certificado son ficticios._
+
 Para comprobar además que el PIN sea aceptado:
 
 ```bash
