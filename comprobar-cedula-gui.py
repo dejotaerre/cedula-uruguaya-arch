@@ -197,6 +197,13 @@ class VentanaCedula(Adw.ApplicationWindow):
         vista = Adw.ToolbarView()
         vista.add_top_bar(barra)
 
+        barra_inferior = Gtk.ActionBar()
+        self.boton_copiar = Gtk.Button(label="Copiar información")
+        self.boton_copiar.set_sensitive(False)
+        self.boton_copiar.connect("clicked", self.al_copiar)
+        barra_inferior.pack_end(self.boton_copiar)
+        vista.add_bottom_bar(barra_inferior)
+
         self.toast = Adw.ToastOverlay()
         vista.set_content(self.toast)
         self.set_content(vista)
@@ -259,16 +266,6 @@ class VentanaCedula(Adw.ApplicationWindow):
         zona_texto.set_child(self.texto)
         caja_datos.append(zona_texto)
 
-        acciones = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=8)
-        acciones.set_halign(Gtk.Align.END)
-        acciones.set_margin_end(10)
-        acciones.set_margin_bottom(10)
-        caja_datos.append(acciones)
-
-        boton_copiar = Gtk.Button(label="Copiar información")
-        boton_copiar.connect("clicked", self.al_copiar)
-        acciones.append(boton_copiar)
-
         GLib.idle_add(self.iniciar_comprobacion)
 
     @staticmethod
@@ -292,6 +289,7 @@ class VentanaCedula(Adw.ApplicationWindow):
 
     def iniciar_comprobacion(self) -> bool:
         self.boton_actualizar.set_sensitive(False)
+        self.boton_copiar.set_sensitive(False)
         self.spinner.start()
         self.texto.get_buffer().set_text("Comprobando lector y cédula…")
         hilo = threading.Thread(target=self.trabajo_comprobacion, daemon=True)
@@ -337,14 +335,17 @@ class VentanaCedula(Adw.ApplicationWindow):
             self.fila_pin.set_subtitle("Disponible cuando la cédula sea reconocida.")
 
         texto = str(resultado.get("texto", ""))
-        if not texto:
+        hay_informacion = bool(texto)
+        if not hay_informacion:
             texto = "No hay información pública disponible para mostrar."
         self.texto.get_buffer().set_text(texto)
+        self.boton_copiar.set_sensitive(hay_informacion)
         return GLib.SOURCE_REMOVE
 
     def mostrar_error(self, mensaje: str) -> bool:
         self.spinner.stop()
         self.boton_actualizar.set_sensitive(True)
+        self.boton_copiar.set_sensitive(False)
         self.texto.get_buffer().set_text(f"No se pudo completar la comprobación.\n\n{mensaje}")
         self.toast.add_toast(Adw.Toast(title="La comprobación encontró un error", timeout=4))
         return GLib.SOURCE_REMOVE
